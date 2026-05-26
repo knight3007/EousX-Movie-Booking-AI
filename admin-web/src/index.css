@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+:root {
+  --font-heading: "Barlow Condensed", "Oswald", sans-serif;
+  --font-body: "Inter", "Roboto", sans-serif;
+
+  --color-bg: #0b0b0f;
+  --color-panel: #15151c;
+  --color-card: #1e1e28;
+
+  --color-primary: #f5c400;
+  --color-primary-dark: #d9a900;
+
+  --color-danger: #ff3b3b;
+  --color-success: #32d583;
+
+  --color-text: #f5f5f5;
+  --color-muted: #9ca3af;
+  --color-border: #2d2d38;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(245, 196, 0, 0.1), transparent 32rem),
+    radial-gradient(circle at bottom right, rgba(255, 59, 59, 0.08), transparent 32rem),
+    var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.brand-title,
+.nav-item,
+.action-button,
+.page-title,
+.card-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.eous-card {
+  background: rgba(30, 30, 40, 0.88);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #111;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 10px;
+  padding: 10px 18px;
+  transition: 0.18s ease;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-dark {
+  background: var(--color-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px 18px;
+}
+
+.text-muted {
+  color: var(--color-muted);
+}

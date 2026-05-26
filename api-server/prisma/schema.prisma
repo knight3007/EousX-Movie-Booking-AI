@@ -1,0 +1,278 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoomType {
+  STANDARD_2D
+  VIP
+  COUPLE
+}
+
+enum SeatType {
+  STANDARD
+  VIP
+  COUPLE
+  DISABLED
+  MAINTENANCE
+}
+
+enum MovieStatus {
+  NOW_SHOWING
+  UPCOMING
+  ENDED
+}
+
+enum ShowtimeStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum SeatLockStatus {
+  ACTIVE
+  EXPIRED
+  RELEASED
+  CONVERTED_TO_BOOKING
+}
+
+enum BookingStatus {
+  PENDING
+  WAITING_PAYMENT
+  PAID
+  EXPIRED
+  CANCELLED
+  REFUNDED
+  CHECKED_IN
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+enum TicketStatus {
+  VALID
+  USED
+  CANCELLED
+  EXPIRED
+}
+
+enum AdminRole {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+model Cinema {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  phone     String?
+  rooms     Room[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id        String     @id @default(uuid())
+  cinemaId  String
+  name      String
+  type      RoomType
+  rows      Int
+  columns   Int
+  seats     Seat[]
+  showtimes Showtime[]
+
+  cinema    Cinema     @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([cinemaId])
+}
+
+model Seat {
+  id        String   @id @default(uuid())
+  roomId    String
+  row       String
+  number    Int
+  code      String
+  type      SeatType
+  isActive  Boolean  @default(true)
+
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  seatLocks    SeatLock[]
+  bookingSeats BookingSeat[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([roomId, code])
+  @@index([roomId])
+}
+
+model Movie {
+  id            String       @id @default(uuid())
+  title         String
+  originalTitle String?
+  overview      String
+  posterUrl     String?
+  backdropUrl   String?
+  trailerKey    String?
+  runtime       Int
+  genres        String[]
+  rating        Float
+  ageRating     String
+  status        MovieStatus
+
+  showtimes     Showtime[]
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Showtime {
+  id          String         @id @default(uuid())
+  movieId     String
+  roomId      String
+  startTime   DateTime
+  endTime     DateTime
+  basePrice   Int
+  status      ShowtimeStatus @default(OPEN)
+
+  movie       Movie          @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  room        Room           @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  seatLocks   SeatLock[]
+  bookings    Booking[]
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([movieId])
+  @@index([roomId])
+  @@index([startTime])
+}
+
+model User {
+  id        String    @id @default(uuid())
+  fullName  String
+  email     String    @unique
+  phone     String?
+  password  String?
+  avatarUrl String?
+  firebaseUid String?  @unique
+
+  seatLocks SeatLock[]
+  bookings  Booking[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Admin {
+  id        String    @id @default(uuid())
+  fullName  String
+  email     String    @unique
+  password  String
+  role      AdminRole @default(STAFF)
+  isActive  Boolean   @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SeatLock {
+  id          String         @id @default(uuid())
+  userId      String
+  showtimeId  String
+  seatId      String
+  status      SeatLockStatus @default(ACTIVE)
+  lockedUntil DateTime
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showtime    Showtime       @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seat        Seat           @relation(fields: [seatId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([showtimeId])
+  @@index([seatId])
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  userId      String
+  showtimeId  String
+  code        String        @unique
+  status      BookingStatus @default(PENDING)
+  totalAmount Int
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showtime    Showtime      @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+
+  seats       BookingSeat[]
+  payment     Payment?
+  ticket      Ticket?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([showtimeId])
+}
+
+model BookingSeat {
+  id        String   @id @default(uuid())
+  bookingId String
+  seatId    String
+  price     Int
+
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  seat      Seat    @relation(fields: [seatId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([bookingId, seatId])
+  @@index([seatId])
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  bookingId     String        @unique
+  provider      String
+  transactionId String?
+  amount        Int
+  status        PaymentStatus @default(CREATED)
+  paidAt        DateTime?
+
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Ticket {
+  id        String       @id @default(uuid())
+  bookingId String       @unique
+  qrCode    String       @unique
+  status    TicketStatus @default(VALID)
+  usedAt    DateTime?
+
+  booking   Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}

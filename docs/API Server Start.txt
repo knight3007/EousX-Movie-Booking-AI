@@ -1,0 +1,20 @@
+Lệnh khởi động hằng ngày
+docker compose up -d
+docker ps
+npm run start:dev
+
+Lệnh chỉ cần chạy lần đầu hoặc khi setup lại
+Nếu máy mới clone project về hoặc mới tạo project lần đầu:
+npm install
+
+Generate Prisma Client:
+npx prisma generate
+
+Tạo bảng database:
+npx prisma migrate dev --name init
+
+Seed dữ liệu mẫu:
+npx prisma db seed
+
+Mở Prisma Studio để xem database:
+npx prisma studio

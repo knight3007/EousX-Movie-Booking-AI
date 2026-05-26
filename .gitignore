@@ -1,0 +1,68 @@
+# EousX monorepo safety ignores
+
+# Environment and local configuration
+.env
+.env.*
+**/.env
+**/.env.*
+api-server/.env
+admin-web/.env
+client-app/local.properties
+
+# Service accounts and app credentials
+api-server/firebase-service-account.json
+api-server/firebase-service-account*.json
+**/firebase-service-account*.json
+**/*.service-account.json
+**/*service-account*.json
+client-app/app/google-services.json
+client-app/google-services.json
+**/google-services.json
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+**/dist/
+build/
+**/build/
+.gradle/
+**/.gradle/
+client-app/build/
+client-app/app/build/
+admin-web/dist/
+admin-web/dist-ssr/
+api-server/dist/
+
+# Logs, reports, and temporary files
+logs/
+*.log
+tmp/
+temp/
+api-smoke-report.json
+
+# IDE and OS files
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Mobile generated artifacts
+*.apk
+*.aab
+screen.png
+
+# Optional temporary process docs. Uncomment later only if you decide to keep
+# planning/audit drafts out of Git; do not ignore all docs by default.
+# docs/tmp/
+# docs/drafts/
+# docs/archive/

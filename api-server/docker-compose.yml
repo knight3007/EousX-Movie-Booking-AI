@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: eousx_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: eousx_user
+      POSTGRES_PASSWORD: eousx_password
+      POSTGRES_DB: eousx_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - eousx_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  eousx_postgres_data:
