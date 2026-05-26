@@ -107,6 +107,7 @@ Core Prisma models:
 
 | Enum | Values |
 |---|---|
+| `RoomType` | `STANDARD_2D`, `VIP`, `COUPLE` |
 | `MovieStatus` | `NOW_SHOWING`, `UPCOMING`, `ENDED` |
 | `ShowtimeStatus` | `OPEN`, `CLOSED`, `CANCELLED` |
 | `SeatType` | `STANDARD`, `VIP`, `COUPLE`, `DISABLED`, `MAINTENANCE` |
@@ -115,6 +116,7 @@ Core Prisma models:
 | `BookingStatus` | `PENDING`, `WAITING_PAYMENT`, `PAID`, `EXPIRED`, `CANCELLED`, `REFUNDED`, `CHECKED_IN` |
 | `PaymentStatus` | `CREATED`, `PENDING`, `SUCCESS`, `FAILED`, `CANCELLED`, `EXPIRED` |
 | `TicketStatus` | `VALID`, `USED`, `CANCELLED`, `EXPIRED` |
+| `AdminRole` | `ADMIN`, `MANAGER`, `STAFF` |
 
 ## Setup Overview
 
@@ -180,7 +182,7 @@ Dashboard -> Movies -> Showtimes -> Seat Monitor -> Bookings -> Ticket Check-in
 
 - Payment is mock-only for demo purposes.
 - Seat monitor uses polling in the admin web app.
-- Admin authentication is intentionally omitted/simplified for the course demo scope.
+- Admin routes are public in the current demo scope; admin authentication/authorization is future scope.
 - Android ticket screen displays the QR code string returned by the backend; generated QR image rendering is future scope.
 - Android uses the EousX backend as the movie source of truth. Movie metadata, trailer keys, posters, and backdrops should be managed by backend/admin data.
 

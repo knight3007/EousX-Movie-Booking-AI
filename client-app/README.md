@@ -14,6 +14,7 @@ See the root README for course/team information.
 - Coroutines and StateFlow
 - DataStore
 - Firebase Auth for Google login
+- Room is present as a local database dependency, but the current MVP booking flow uses backend API data as the source of truth.
 - Gradle Android module `:app`
 
 ## Backend Integration Rules
@@ -141,7 +142,7 @@ PowerShell build command:
 ## Known Limitations and Future Scope
 
 - Payment is mock-only; no production payment gateway is connected yet.
-- No WebSocket realtime seat updates yet.
+- No WebSocket realtime seat updates yet; seat status is refreshed through API calls.
 - Ticket screen currently displays the backend QR code string; generated QR image rendering is future scope.
 - Movie metadata/trailer/poster management belongs to backend/admin data, not a direct Android TMDB integration.
 

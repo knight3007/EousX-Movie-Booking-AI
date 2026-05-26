@@ -46,7 +46,7 @@ VITE_API_BASE_URL=http://localhost:3000
 
 If `VITE_API_BASE_URL` is not set, the current API client falls back to `http://localhost:3000`.
 
-Do not commit local `.env` files.
+Do not commit local `.env` files. Do not put backend secrets, Firebase service account JSON, JWT secrets, or Gemini API keys in Vite environment variables.
 
 ## Pages and Features
 

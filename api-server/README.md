@@ -62,6 +62,8 @@ PORT
 NODE_ENV
 ```
 
+`GEMINI_API_KEY` is required only for real `POST /ai/chat` responses. The key belongs on the backend only; Android and admin web must not store or call Gemini keys directly.
+
 Do not commit `.env`, Firebase service account JSON files, API keys, JWT secrets, database credentials, or private keys.
 
 ## API Route Overview
@@ -235,6 +237,6 @@ Runtime seat map display statuses:
 ## MVP Notes
 
 - Payment is mock-only.
-- Admin routes are public in the current demo step.
+- Admin routes are public in the current demo step; the `Admin` and `AdminRole` schema models are present, but admin login/guards are not wired into these routes yet.
 - `DELETE /admin/showtimes/:id` cancels a showtime instead of physically deleting it.
 - Production hardening should add admin authentication/authorization and real payment provider integration.
