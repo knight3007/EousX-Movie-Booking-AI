@@ -1,70 +1,120 @@
 # EousX Movie Booking AI
 
-EousX is an AI-assisted cinema movie booking platform built as a university course project and demo-ready MVP. The system includes an Android client for customers, a NestJS API server for business logic, and a React admin web app for cinema staff/admin workflows.
+EousX is an AI-assisted cinema movie booking platform built as a university course project and demo-ready MVP. It contains an Android customer app, a NestJS API server, and a React admin dashboard in one monorepo.
 
-## Main Modules
+## Project Information
 
-- `client-app/` - Android customer application.
-- `api-server/` - Backend API, authentication, booking, payment, ticket, and AI orchestration.
-- `admin-web/` - Admin dashboard for managing and monitoring the cinema flow.
-- `docs/` - Project notes, reports, and supporting documentation.
-
-## Tech Stack
-
-### Backend
-
-- NestJS
-- Prisma
-- PostgreSQL
-- JWT authentication
-- Firebase Admin for Google login verification
-- Gemini API for AI movie assistance
-
-### Android
-
-- Kotlin
-- Jetpack Compose
-- Retrofit
-- Coroutines
-- DataStore
-
-### Admin Web
-
-- React
-- Vite
-- TypeScript
-- Tailwind CSS
-
-## Implemented MVP Features
-
-- Email/password authentication
-- Google login
-- Movie browsing
-- Showtime selection
-- Seat map and seat locking
-- Booking flow
-- Mock payment
-- Ticket generation and verification
-- Booking history
-- AI movie assistant
-- Admin dashboard and operational pages
-
-## AI Assistant
-
-The Android app does not call Gemini directly. AI requests go through the backend via `/ai/chat`, where the API server controls recommendation logic and calls Gemini when needed.
-
-The AI assistant is designed for the EousX booking context and recommends movies based on movies/showtimes available in the EousX system instead of making unrestricted external recommendations.
+- University: University of Information Technology
+- Builders:
+  - 23520450 - Đỗ Thái Hậu
+  - 23520297 - Hoàng Xuân Đồng
 
 ## Monorepo Structure
 
 ```text
 EousX-Movie-Booking-AI/
-  api-server/
-  client-app/
-  admin-web/
-  docs/
+  api-server/   # NestJS API, Prisma, PostgreSQL, auth, booking, AI
+  client-app/   # Android customer app
+  admin-web/    # React admin dashboard
+  docs/         # Supporting project notes and reports
   README.md
 ```
+
+## Main Modules
+
+| Module | Purpose |
+|---|---|
+| `api-server/` | Business logic, JWT auth, Firebase Google login verification, movie/showtime/seat/booking/payment/ticket APIs, AI chat orchestration. |
+| `client-app/` | Android customer flow: login, browse movies, choose showtime/seats, mock payment, ticket, history, AI chat. |
+| `admin-web/` | Admin/operator flow: dashboard, movies, showtimes, seat monitor, bookings, ticket check-in. |
+
+## Tech Stack
+
+| Area | Stack |
+|---|---|
+| Backend | NestJS, TypeScript, Prisma, PostgreSQL, JWT, Firebase Admin, Gemini API |
+| Android | Kotlin, Jetpack Compose, Hilt, Retrofit/Moshi/OkHttp, Coroutines/StateFlow, DataStore, Firebase Auth |
+| Admin Web | React, Vite, TypeScript, Tailwind CSS, Axios, React Router, TanStack Query |
+
+## Implemented MVP Features
+
+- Email/password register and login
+- Google login through Firebase ID token verification on the backend
+- Movie browsing and movie details
+- Showtime selection
+- Seat map and temporary seat locking
+- Booking creation and booking history
+- Mock payment flow
+- Ticket generation, verification, and check-in
+- AI movie assistant through backend `/ai/chat`
+- Admin dashboard for the demo cinema flow
+
+## Architecture Flow
+
+```text
+Android App / Admin Web
+        |
+        v
+NestJS API Server  -- Prisma --> PostgreSQL
+        |
+        +-- Firebase Admin verifies Google login tokens
+        |
+        +-- Gemini API powers AI chat recommendations
+```
+
+The backend has no `/api` prefix. Example routes are `/auth/login`, `/movies`, `/bookings`, and `/ai/chat`.
+
+## AI Assistant
+
+- Android does not call Gemini directly.
+- Clients call `POST /ai/chat` with the EousX backend JWT.
+- The backend builds an `AVAILABLE_MOVIES` context from real `OPEN` showtimes.
+- Gemini recommendations are sanitized by the backend so only movies available in EousX showtimes are returned.
+
+## API Overview
+
+| Group | Example routes |
+|---|---|
+| Health | `GET /health` |
+| Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/google`, `GET /auth/me` |
+| Movies | `GET /movies`, `GET /movies/now-showing`, `GET /movies/upcoming`, `GET /movies/:id` |
+| Rooms | `GET /rooms`, `GET /rooms/:id` |
+| Showtimes | `GET /showtimes`, `GET /showtimes/:id`, `GET /movies/:movieId/showtimes?date=YYYY-MM-DD` |
+| Seats | `GET /showtimes/:showtimeId/seats`, `GET /admin/showtimes/:showtimeId/seats` |
+| Seat Locks | `POST /showtimes/:showtimeId/seat-locks`, `GET /seat-locks/:lockId`, `DELETE /seat-locks/:lockId` |
+| Bookings | `POST /bookings`, `GET /bookings/me`, `GET /bookings/:id`, `PATCH /bookings/:id/cancel` |
+| Payments | `POST /payments/mock-success`, `GET /payments/:id/status`, `GET /bookings/:bookingId/payment` |
+| Tickets | `GET /bookings/:bookingId/ticket`, `GET /tickets/verify/:qrCode`, `POST /tickets/:ticketId/check-in` |
+| AI | `POST /ai/chat` |
+| Admin | `/admin/movies`, `/admin/showtimes`, `/admin/bookings`, `/admin/rooms` |
+
+## Database Overview
+
+Core Prisma models:
+
+- `User` owns customer bookings and seat locks.
+- `Movie` has many showtimes.
+- `Cinema` has rooms; `Room` has seats and showtimes.
+- `Seat` belongs to a room. Sold/locked display status is calculated per showtime from bookings and active locks.
+- `Showtime` belongs to a movie and room.
+- `SeatLock` temporarily reserves a seat for a user and showtime.
+- `Booking` belongs to a user and showtime.
+- `BookingSeat` stores seats and prices for a booking.
+- `Payment` belongs to one booking.
+- `Ticket` belongs to one booking and stores the QR code/check-in state.
+
+## Status Labels
+
+| Enum | Values |
+|---|---|
+| `MovieStatus` | `NOW_SHOWING`, `UPCOMING`, `ENDED` |
+| `ShowtimeStatus` | `OPEN`, `CLOSED`, `CANCELLED` |
+| `SeatType` | `STANDARD`, `VIP`, `COUPLE`, `DISABLED`, `MAINTENANCE` |
+| Seat display status | `AVAILABLE`, `LOCKED`, `SOLD`, `MAINTENANCE` |
+| `SeatLockStatus` | `ACTIVE`, `EXPIRED`, `RELEASED`, `CONVERTED_TO_BOOKING` |
+| `BookingStatus` | `PENDING`, `WAITING_PAYMENT`, `PAID`, `EXPIRED`, `CANCELLED`, `REFUNDED`, `CHECKED_IN` |
+| `PaymentStatus` | `CREATED`, `PENDING`, `SUCCESS`, `FAILED`, `CANCELLED`, `EXPIRED` |
+| `TicketStatus` | `VALID`, `USED`, `CANCELLED`, `EXPIRED` |
 
 ## Setup Overview
 
@@ -74,13 +124,11 @@ EousX-Movie-Booking-AI/
 cd api-server
 npm install
 docker compose up -d
-npm run prisma:generate
-npm run prisma:migrate
-npm run seed
+npx prisma generate
+npx prisma migrate dev
+npx prisma db seed
 npm run start:dev
 ```
-
-The backend runs without an `/api` prefix. For example, auth routes are under `/auth/*`, not `/api/auth/*`.
 
 ### Android Client
 
@@ -91,7 +139,7 @@ cd client-app
 .\gradlew.bat :app:assembleDebug
 ```
 
-When using an Android emulator, the backend host should be configured as `http://10.0.2.2:3000/`.
+For an Android emulator, use backend base URL `http://10.0.2.2:3000/`.
 
 ### Admin Web
 
@@ -101,25 +149,28 @@ npm install
 npm run dev
 ```
 
-## Environment and Secrets
+## Environment and Security
 
-The following local files may be required for development, but must not be committed:
+Local development may require:
 
-- `.env`
+- `api-server/.env`
 - `api-server/firebase-service-account.json`
-- `client-app/app/google-services.json`
 - `client-app/local.properties`
+- `client-app/app/google-services.json`
+- `admin-web/.env`
 
-Use example files or documentation to describe required variables. Never commit API keys, service account JSON files, private keys, or local environment files.
+These files must not be committed. The root `.gitignore` is configured to ignore local environment files, Firebase service accounts, Google services JSON, private keys, build outputs, and dependency folders.
 
 ## Demo Flow
 
+Customer:
+
 ```text
-Login -> Browse movie -> Select showtime -> Select seats -> Create booking
-      -> Mock payment -> Receive ticket -> View booking history
+Login -> Browse movie -> Movie detail -> Showtime -> Seat map
+      -> Booking -> Mock payment -> Ticket -> Booking history
 ```
 
-Admin demo flow:
+Admin:
 
 ```text
 Dashboard -> Movies -> Showtimes -> Seat Monitor -> Bookings -> Ticket Check-in
@@ -127,17 +178,19 @@ Dashboard -> Movies -> Showtimes -> Seat Monitor -> Bookings -> Ticket Check-in
 
 ## Current MVP Status
 
-- Payment is implemented as mock payment for demo purposes only.
-- No production payment gateway is connected yet.
-- AI recommendation is an MVP feature controlled by the backend.
-- Admin scope is intentionally simplified for a course project/demo workflow.
+- Payment is mock-only for demo purposes.
+- Seat monitor uses polling in the admin web app.
+- Admin authentication is intentionally omitted/simplified for the course demo scope.
+- Android ticket screen displays the QR code string returned by the backend; generated QR image rendering is future scope.
+- Android uses the EousX backend as the movie source of truth. Movie metadata, trailer keys, posters, and backdrops should be managed by backend/admin data.
 
 ## Future Scope
 
-- Production payment integration such as ZaloPay or MoMo.
+- Production payment gateway such as ZaloPay or MoMo.
 - Realtime seat updates with WebSocket.
-- Advanced AI memory and personalized recommendations.
-- Admin analytics and reporting.
+- Advanced AI memory and stronger personalization.
+- Admin authentication and role-based permissions.
+- Analytics and reporting.
 
 ## Course Note
 
