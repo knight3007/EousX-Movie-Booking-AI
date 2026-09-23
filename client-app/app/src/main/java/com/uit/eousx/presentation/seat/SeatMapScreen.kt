@@ -2,8 +2,10 @@ package com.uit.eousx.presentation.seat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -131,6 +133,7 @@ private fun SeatMapContent(
                 .background(EousXColors.Charcoal)
                 .padding(paddingValues)
                 .padding(horizontal = EousXSpacing.xl)
+                .verticalScroll(rememberScrollState())
         ) {
             SeatTopBar(
                 isRefreshing = uiState.isRefreshing,
@@ -258,20 +261,28 @@ private fun SeatMapBody(
                 .horizontalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                rows.forEach { (_, seats) ->
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        seats.forEach { seat ->
-                            EousXSeat(
-                                seat = seat.toUiState(selectedSeatIds),
-                                onClick = { onSeatClick(seat.id) }
-                            )
+            BoxWithConstraints(contentAlignment = Alignment.Center) {
+                val maxColumns = rows.values.maxOfOrNull { it.size } ?: 1
+                val seatGap = 5.dp
+                val availableSeatWidth = maxWidth - (seatGap * (maxColumns - 1))
+                val seatSize = (availableSeatWidth / maxColumns).coerceIn(30.dp, 42.dp)
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(seatGap)
+                ) {
+                    rows.forEach { (_, seats) ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(seatGap, Alignment.CenterHorizontally),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            seats.forEach { seat ->
+                                EousXSeat(
+                                    seat = seat.toUiState(selectedSeatIds),
+                                    size = seatSize,
+                                    onClick = { onSeatClick(seat.id) }
+                                )
+                            }
                         }
                     }
                 }

@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,12 +46,13 @@ data class SeatUiState(
 fun EousXSeat(
     seat: SeatUiState,
     onClick: (SeatUiState) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 42.dp
 ) {
     val style = seatStyle(seat.status)
     Box(
         modifier = modifier
-            .size(42.dp)
+            .size(size)
             .background(style.containerColor, RoundedCornerShape(EousXRadius.sm))
             .border(1.dp, style.borderColor, RoundedCornerShape(EousXRadius.sm))
             .clickable(enabled = seat.enabled) { onClick(seat) },
@@ -64,15 +67,16 @@ fun EousXSeat(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EousXSeatLegend(
     modifier: Modifier = Modifier,
     statuses: List<SeatStatus> = SeatStatus.entries
 ) {
-    Row(
+    FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(EousXSpacing.md),
-        verticalAlignment = Alignment.CenterVertically
+        verticalArrangement = Arrangement.spacedBy(EousXSpacing.xs)
     ) {
         statuses.forEach { status ->
             val style = seatStyle(status)

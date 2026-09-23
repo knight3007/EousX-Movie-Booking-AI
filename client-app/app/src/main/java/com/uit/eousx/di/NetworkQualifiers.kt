@@ -9,7 +9,3 @@ annotation class BackendRetrofit
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class BackendOkHttpClient
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class TmdbRetrofit

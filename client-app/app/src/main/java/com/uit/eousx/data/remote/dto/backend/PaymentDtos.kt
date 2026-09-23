@@ -18,6 +18,31 @@ data class MockPaymentResponseDto(
 )
 
 @JsonClass(generateAdapter = true)
+data class CreateSePayPaymentRequest(
+    @Json(name = "bookingId") val bookingId: String
+)
+
+@JsonClass(generateAdapter = true)
+data class SePayPaymentResponse(
+    @Json(name = "provider") val provider: String? = null,
+    @Json(name = "paymentCode") val paymentCode: String? = null,
+    @Json(name = "bookingId") val bookingId: String? = null,
+    @Json(name = "amount") val amount: Long? = null,
+    @Json(name = "status") val status: String? = null,
+    @Json(name = "paymentStatus") val paymentStatus: String? = null,
+    @Json(name = "qrImageUrl") val qrImageUrl: String? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class SePayPaymentStatusResponse(
+    @Json(name = "paymentCode") val paymentCode: String,
+    @Json(name = "paymentStatus") val paymentStatus: String,
+    @Json(name = "bookingStatus") val bookingStatus: String,
+    @Json(name = "bookingId") val bookingId: String,
+    @Json(name = "hasTicket") val hasTicket: Boolean
+)
+
+@JsonClass(generateAdapter = true)
 data class PaymentDto(
     @Json(name = "id") val id: String? = null,
     @Json(name = "bookingId") val bookingId: String? = null,

@@ -73,6 +73,7 @@ import com.uit.eousx.ui.theme.EousText
 import java.text.NumberFormat
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
@@ -545,7 +546,7 @@ private fun formatShowtimeDateTime(value: String?): String {
 
 private fun parseDateTime(value: String): LocalDateTime? {
     val parsers = listOf<() -> LocalDateTime>(
-        { OffsetDateTime.parse(value).toLocalDateTime() },
+        { OffsetDateTime.parse(value).atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime() },
         { LocalDateTime.parse(value) }
     )
     return parsers.firstNotNullOfOrNull { parser ->

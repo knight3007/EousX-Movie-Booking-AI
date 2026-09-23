@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.uit.eousx.core.utils.formatShowtimeTime
 import com.uit.eousx.domain.model.Showtime
 import com.uit.eousx.presentation.components.EousXColors
 import com.uit.eousx.presentation.components.EousXCustomChip
@@ -55,11 +56,7 @@ import com.uit.eousx.presentation.components.EousXTheme
 import com.uit.eousx.presentation.components.EousXTypography
 import java.text.NumberFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.Locale
 
 @Composable
@@ -353,26 +350,6 @@ private fun nextSixDates(): List<DateChipUiModel> {
             label = if (offset == 0) "Today" else date.format(labelFormatter),
             dayOfMonth = date.format(dayFormatter)
         )
-    }
-}
-
-private fun formatShowtimeTime(value: String): String {
-    if (value.isBlank()) return "--:--"
-    return parseTime(value)?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: value.take(5)
-}
-
-private fun parseTime(value: String): LocalTime? {
-    val parsers = listOf<() -> LocalTime>(
-        { OffsetDateTime.parse(value).toLocalTime() },
-        { LocalDateTime.parse(value).toLocalTime() },
-        { LocalTime.parse(value) }
-    )
-    return parsers.firstNotNullOfOrNull { parser ->
-        try {
-            parser()
-        } catch (_: DateTimeParseException) {
-            null
-        }
     }
 }
 

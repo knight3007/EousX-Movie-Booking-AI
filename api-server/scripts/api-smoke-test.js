@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const baseUrl = (process.env.EOUSX_API_BASE_URL || 'http://localhost:3000').replace(/\/$/, '');
+const baseUrl = (process.env.EOUSX_API_BASE_URL || 'https://api-eousx.hius.io.vn').replace(/\/$/, '');
 const suffix = Date.now();
 const reportPath = path.join(process.cwd(), 'api-smoke-report.json');
 

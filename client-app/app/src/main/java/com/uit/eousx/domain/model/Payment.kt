@@ -9,3 +9,20 @@ data class Payment(
     val status: String,
     val paidAt: String?
 )
+
+data class SePayPayment(
+    val provider: String,
+    val paymentCode: String,
+    val bookingId: String,
+    val amount: Long,
+    val status: String,
+    val qrImageUrl: String
+)
+
+data class SePayPaymentStatus(
+    val paymentCode: String,
+    val paymentStatus: String,
+    val bookingStatus: String,
+    val bookingId: String,
+    val hasTicket: Boolean
+)

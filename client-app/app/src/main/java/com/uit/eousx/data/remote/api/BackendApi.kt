@@ -9,6 +9,7 @@ import com.uit.eousx.data.remote.dto.backend.BookingDto
 import com.uit.eousx.data.remote.dto.backend.BookingResponseDto
 import com.uit.eousx.data.remote.dto.backend.CancelBookingResponseDto
 import com.uit.eousx.data.remote.dto.backend.CreateBookingRequestDto
+import com.uit.eousx.data.remote.dto.backend.CreateSePayPaymentRequest
 import com.uit.eousx.data.remote.dto.backend.GoogleAuthRequest
 import com.uit.eousx.data.remote.dto.backend.LockSeatsRequestDto
 import com.uit.eousx.data.remote.dto.backend.LockSeatsResponseDto
@@ -19,6 +20,8 @@ import com.uit.eousx.data.remote.dto.backend.MovieShowtimesResponseDto
 import com.uit.eousx.data.remote.dto.backend.RegisterRequest
 import com.uit.eousx.data.remote.dto.backend.ReleaseSeatLockResponseDto
 import com.uit.eousx.data.remote.dto.backend.SeatMapResponseDto
+import com.uit.eousx.data.remote.dto.backend.SePayPaymentResponse
+import com.uit.eousx.data.remote.dto.backend.SePayPaymentStatusResponse
 import com.uit.eousx.data.remote.dto.backend.TicketDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -87,6 +90,16 @@ interface BackendApi {
 
     @POST("payments/mock-success")
     suspend fun mockPaymentSuccess(@Body request: MockPaymentRequestDto): MockPaymentResponseDto
+
+    @POST("payments/sepay/create")
+    suspend fun createSePayPayment(
+        @Body request: CreateSePayPaymentRequest
+    ): SePayPaymentResponse
+
+    @GET("payments/sepay/status/{paymentCode}")
+    suspend fun getSePayPaymentStatus(
+        @Path("paymentCode") paymentCode: String
+    ): SePayPaymentStatusResponse
 
     @GET("bookings/{bookingId}/ticket")
     suspend fun getTicketByBooking(@Path("bookingId") bookingId: String): TicketDto

@@ -1,6 +1,3 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,14 +6,6 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.google.services)
 }
-
-// 1. ĐOẠN CODE ĐỌC FILE LOCAL.PROPERTIES
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    localProperties.load(FileInputStream(localPropertiesFile))
-}
-val tmdbApiKey = localProperties.getProperty("TMDB_API_KEY") ?: ""
 
 android {
     namespace = "com.uit.eousx"
@@ -30,9 +19,6 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // 2. TRUYỀN KEY VÀO BUILDCONFIG
-        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
     }
 
     buildTypes {
@@ -86,7 +72,7 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.play.services.auth)
 
-    // Network (Retrofit, Moshi, OkHttp)
+    // Backend networking
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.okhttp.logging)
@@ -101,12 +87,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
-
-    // Thư viện Lottie cho Animation
     implementation("com.airbnb.android:lottie-compose:6.3.0")
-
     implementation("androidx.compose.material:material-icons-extended")
-
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     testImplementation(libs.junit)
