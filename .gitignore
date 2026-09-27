@@ -8,6 +8,10 @@
 api-server/.env
 admin-web/.env
 client-app/local.properties
+.docs/
+.agents/
+AGENTS.md
+EousX update list.md
 
 # Service accounts and app credentials
 api-server/firebase-service-account.json
