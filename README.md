@@ -25,7 +25,7 @@ EousX-Movie-Booking-AI/
 | Module | Purpose |
 |---|---|
 | `api-server/` | Business logic, JWT auth, Firebase Google login verification, movie/showtime/seat/booking/payment/ticket APIs, AI chat orchestration. |
-| `client-app/` | Android customer flow: login, browse movies, choose showtime/seats, mock payment, ticket, history, AI chat. |
+| `client-app/` | Android customer flow: login, browse movies, choose showtime/seats, payment (SePay QR or mock-success), ticket, history, AI chat. |
 | `admin-web/` | Admin/operator flow: dashboard, movies, showtimes, seat monitor, bookings, ticket check-in. |
 
 ## Tech Stack
@@ -44,7 +44,7 @@ EousX-Movie-Booking-AI/
 - Showtime selection
 - Seat map and temporary seat locking
 - Booking creation and booking history
-- Mock payment flow
+- Payment: SePay Test Mode (QR + webhook confirmation) and mock-success fallback
 - Ticket generation, verification, and check-in
 - AI movie assistant through backend `/ai/chat`
 - Admin dashboard for the demo cinema flow
@@ -83,7 +83,7 @@ The backend has no `/api` prefix. Example routes are `/auth/login`, `/movies`, `
 | Seats | `GET /showtimes/:showtimeId/seats`, `GET /admin/showtimes/:showtimeId/seats` |
 | Seat Locks | `POST /showtimes/:showtimeId/seat-locks`, `GET /seat-locks/:lockId`, `DELETE /seat-locks/:lockId` |
 | Bookings | `POST /bookings`, `GET /bookings/me`, `GET /bookings/:id`, `PATCH /bookings/:id/cancel` |
-| Payments | `POST /payments/mock-success`, `GET /payments/:id/status`, `GET /bookings/:bookingId/payment` |
+| Payments | `POST /payments/sepay/create`, `POST /payments/webhook/sepay`, `GET /payments/sepay/status/:paymentCode`, `POST /payments/mock-success`, `GET /payments/:id/status`, `GET /bookings/:bookingId/payment` |
 | Tickets | `GET /bookings/:bookingId/ticket`, `GET /tickets/verify/:qrCode`, `POST /tickets/:ticketId/check-in` |
 | AI | `POST /ai/chat` |
 | Admin | `/admin/movies`, `/admin/showtimes`, `/admin/bookings`, `/admin/rooms` |
@@ -169,7 +169,7 @@ Customer:
 
 ```text
 Login -> Browse movie -> Movie detail -> Showtime -> Seat map
-      -> Booking -> Mock payment -> Ticket -> Booking history
+      -> Booking -> Payment (SePay QR or mock-success) -> Ticket -> Booking history
 ```
 
 Admin:
@@ -180,7 +180,7 @@ Dashboard -> Movies -> Showtimes -> Seat Monitor -> Bookings -> Ticket Check-in
 
 ## Current MVP Status
 
-- Payment is mock-only for demo purposes.
+- Payment supports two flows: SePay Test Mode (QR display + server-side webhook confirmation) and mock-success for quick demo. End-to-end SePay flow requires the SePay test environment and a running Cloudflare Tunnel or public endpoint for webhook delivery.
 - Seat monitor uses polling in the admin web app.
 - Admin routes are public in the current demo scope; admin authentication/authorization is future scope.
 - Android ticket screen displays the QR code string returned by the backend; generated QR image rendering is future scope.
@@ -188,7 +188,7 @@ Dashboard -> Movies -> Showtimes -> Seat Monitor -> Bookings -> Ticket Check-in
 
 ## Future Scope
 
-- Production payment gateway such as ZaloPay or MoMo.
+- SePay Production Mode and additional payment gateways (ZaloPay, MoMo).
 - Realtime seat updates with WebSocket.
 - Advanced AI memory and stronger personalization.
 - Admin authentication and role-based permissions.

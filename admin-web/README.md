@@ -97,7 +97,7 @@ Seat display statuses:
 - Admin authentication is omitted/simplified in the current demo scope.
 - Room/seat CRUD is intentionally reduced; rooms and seats are seeded/read-only for the admin UI.
 - `DELETE /admin/showtimes/:id` cancels a showtime in the backend.
-- Payment is mock-only.
+- Payment confirmation is handled server-side; admin can review booking/payment status in the Bookings page.
 - Realtime WebSocket updates are future scope; the current seat monitor uses polling.
 
 ## Security Notes

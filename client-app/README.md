@@ -1,6 +1,6 @@
 # EousX Android Client
 
-Android customer app for the EousX Movie Booking AI MVP. It provides the customer-facing flow for authentication, movie discovery, showtime selection, seat locking, booking, mock payment, tickets, booking history, profile/logout, and AI chat.
+Android customer app for the EousX Movie Booking AI MVP. It provides the customer-facing flow for authentication, movie discovery, showtime selection, seat locking, booking, payment (SePay QR or mock-success), tickets, booking history, profile/logout, and AI chat.
 
 See the root README for course/team information.
 
@@ -54,7 +54,7 @@ http://<your-computer-lan-ip>:3000/
 | Movie Schedule | `movie_schedule/{movieId}` | Showtime selection. |
 | Seat Map | `seat_map/{showtimeId}` | Seat display and seat lock request. |
 | Checkout | `checkout/{showtimeId}` | Booking confirmation from lock IDs. |
-| Payment | `payment/{bookingId}` | Mock payment flow. |
+| Payment | `payment/{bookingId}` | Payment screen: SePay QR flow or mock-success fallback. |
 | Ticket | `ticket/{bookingId}` | Ticket details and QR code string. |
 | AI Chat | `ai_chat` | AI assistant with recommended movie cards. |
 
@@ -70,7 +70,7 @@ http://<your-computer-lan-ip>:3000/
 - Seat map with `AVAILABLE`, `LOCKED`, `SOLD`, and `MAINTENANCE` states
 - Seat locking and release
 - Checkout and booking creation
-- Mock payment
+- Payment: SePay QR display and polling, with mock-success as demo fallback
 - Ticket detail
 - Booking history
 - Profile/logout
@@ -94,6 +94,8 @@ The app uses `BackendApi` for:
 - `GET bookings/me`
 - `GET bookings/{id}`
 - `PATCH bookings/{id}/cancel`
+- `POST payments/sepay/create`
+- `GET payments/sepay/status/:paymentCode`
 - `POST payments/mock-success`
 - `GET bookings/{bookingId}/ticket`
 - `POST ai/chat`
@@ -141,7 +143,7 @@ PowerShell build command:
 
 ## Known Limitations and Future Scope
 
-- Payment is mock-only; no production payment gateway is connected yet.
+- Payment supports two flows: SePay Test Mode (QR display + polling for webhook confirmation) and mock-success for quick demo. End-to-end SePay flow requires the SePay test environment. SePay Production Mode is future scope.
 - No WebSocket realtime seat updates yet; seat status is refreshed through API calls.
 - Ticket screen currently displays the backend QR code string; generated QR image rendering is future scope.
 - Movie metadata/trailer/poster management belongs to backend/admin data, not a direct Android TMDB integration.

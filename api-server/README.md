@@ -1,6 +1,6 @@
 # EousX API Server
 
-NestJS backend for the EousX Movie Booking AI MVP. It handles authentication, movies, rooms, showtimes, seat maps, seat locking, bookings, mock payment, tickets, admin data, and AI chat orchestration.
+NestJS backend for the EousX Movie Booking AI MVP. It handles authentication, movies, rooms, showtimes, seat maps, seat locking, bookings, payment (SePay Test Mode and mock-success fallback), tickets, admin data, and AI chat orchestration.
 
 The API has no `/api` prefix. Routes are exposed directly, for example `/auth/login`, `/movies`, `/bookings`, and `/ai/chat`.
 
@@ -146,7 +146,10 @@ Seat display status is calculated for a specific showtime from active locks and 
 
 | Method | Route | Purpose |
 |---|---|---|
-| `POST` | `/payments/mock-success` | Mark a waiting booking as paid and create/update ticket. |
+| `POST` | `/payments/sepay/create` | Create SePay payment and return QR URL. JWT required. |
+| `POST` | `/payments/webhook/sepay` | SePay webhook endpoint. Protected by SePay API Key (not JWT). |
+| `GET` | `/payments/sepay/status/:paymentCode` | Poll SePay payment and booking status by paymentCode. JWT required. |
+| `POST` | `/payments/mock-success` | Mark a waiting booking as paid instantly (demo/fallback). JWT required. |
 | `GET` | `/payments/:id/status` | Get payment status/detail. |
 | `GET` | `/bookings/:bookingId/payment` | Get current user's payment by booking. |
 
@@ -236,7 +239,7 @@ Runtime seat map display statuses:
 
 ## MVP Notes
 
-- Payment is mock-only.
+- Payment supports two flows: SePay Test Mode (QR + server-side webhook confirmation) and mock-success for quick demo. End-to-end SePay requires the SePay test environment and a public webhook endpoint (e.g. Cloudflare Tunnel).
 - Admin routes are public in the current demo step; the `Admin` and `AdminRole` schema models are present, but admin login/guards are not wired into these routes yet.
 - `DELETE /admin/showtimes/:id` cancels a showtime instead of physically deleting it.
-- Production hardening should add admin authentication/authorization and real payment provider integration.
+- Production hardening should add admin authentication/authorization and SePay Production Mode.
