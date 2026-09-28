@@ -19,19 +19,43 @@ See the root README for course/team information.
 
 ## Setup
 
+Copy the environment template, then start PostgreSQL and the API together:
+
 ```powershell
-npm install
-docker compose up -d
-npx prisma generate
-npx prisma migrate dev
-npx prisma db seed
-npm run start:dev
+Copy-Item .env.example .env
+docker compose up --build --detach --wait
 ```
 
 Base URL:
 
 ```text
 http://localhost:3000
+```
+
+For a fresh demo database, seed the sample data once:
+
+```powershell
+docker compose exec api npm run seed
+```
+
+The seed script deletes existing application data before recreating the demo dataset. Do not run it against a database you need to preserve.
+
+Useful container commands:
+
+```powershell
+docker compose ps
+docker compose logs --follow api
+docker compose down
+```
+
+The API container waits for PostgreSQL to become healthy, applies pending Prisma migrations, and then starts the compiled NestJS server. To run the API directly on the host for development, start only PostgreSQL and use the existing npm scripts:
+
+```powershell
+npm ci
+docker compose up --detach postgres
+npx prisma generate
+npx prisma migrate dev
+npm run start:dev
 ```
 
 ## Useful Scripts
@@ -45,22 +69,26 @@ npm run seed             # seed demo data
 npm run test:api         # run API smoke test
 ```
 
-The smoke test creates demo data and may write `api-smoke-report.json`, which should not be committed.
+The smoke test defaults to `http://localhost:3000` (override via `EOUSX_API_BASE_URL` for remote testing). It creates temporary test data and outputs `api-smoke-report.json`, which is ignored by Git.
 
 ## Environment Variables
 
-Create a local `.env` file. Common variable names:
+Copy `.env.example` to `.env` and configure local values:
 
-```text
-DATABASE_URL
-JWT_SECRET
-JWT_EXPIRES_IN
-FIREBASE_SERVICE_ACCOUNT_PATH
-FIREBASE_SERVICE_ACCOUNT_JSON
-GEMINI_API_KEY
-PORT
-NODE_ENV
+```powershell
+cp .env.example .env
 ```
+
+Key environment variable groups:
+
+| Group | Variables | Purpose |
+|---|---|---|
+| Server | `PORT`, `API_HOST_PORT`, `NODE_ENV` | API listen port, Compose host-port mapping, and environment mode. |
+| Database | `DATABASE_URL` | PostgreSQL connection string used by Prisma. |
+| Auth | `JWT_SECRET`, `JWT_EXPIRES_IN` | JWT signing secret and token expiration TTL. |
+| Firebase | `FIREBASE_SERVICE_ACCOUNT_PATH`, `FIREBASE_SERVICE_ACCOUNT_JSON`, `FIREBASE_TEST_ID_TOKEN` | Service account for Firebase Admin SDK Google auth verification. |
+| Gemini AI | `GEMINI_API_KEY` | Backend-only API key for the Gemini movie assistant (`POST /ai/chat`). |
+| SePay Payment | `SEPAY_WEBHOOK_API_KEY`, `SEPAY_QR_BASE_URL`, `SEPAY_BANK_CODE`, `SEPAY_BANK_ACCOUNT_NUMBER`, `SEPAY_ACCOUNT_NAME` | VietQR / SePay payment configuration and webhook validation key. |
 
 `GEMINI_API_KEY` is required only for real `POST /ai/chat` responses. The key belongs on the backend only; Android and admin web must not store or call Gemini keys directly.
 

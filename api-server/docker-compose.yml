@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: eousx_postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: eousx_user
       POSTGRES_PASSWORD: eousx_password
@@ -11,6 +11,43 @@ services:
       - "5432:5432"
     volumes:
       - eousx_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eousx_user -d eousx_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eousx-api:local
+    container_name: eousx_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://eousx_user:eousx_password@postgres:5432/eousx_db?schema=public
+    ports:
+      - "${API_HOST_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   eousx_postgres_data:

@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+.env.*
+!.env.example
+api-smoke-report.json
+firebase-service-account*.json
+*.service-account.json
+.git
+.gitignore
+README.md
