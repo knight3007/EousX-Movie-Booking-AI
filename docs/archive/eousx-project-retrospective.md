@@ -249,10 +249,10 @@ Tech stack đã xác minh: Kotlin, Jetpack Compose, Material 3, Hilt, Retrofit, 
 ## 16. Testing & Demo Readiness
 
 - Backend scripts: `npm run build`, `npm run test:api`, `npm run start:dev`, `npm run prisma:generate`, `npm run prisma:migrate`, `npm run seed`.
-- Smoke test: `api-server/scripts/api-smoke-test.js` chạy flow health, auth, Google optional, movies, rooms, showtimes, seats, seat locks, bookings, payments, tickets, admin support. Script có thể dùng `EOUSX_API_BASE_URL`, mặc định public domain, và ghi `api-smoke-report.json`.
+- Smoke test: `api-server/scripts/api-smoke-test.js` chạy flow health, auth, Google optional, movies, rooms, showtimes, seats, seat locks, bookings, payments, tickets, admin support. Script mặc định target `http://localhost:3000`, có thể override qua `EOUSX_API_BASE_URL` khi muốn test remote, và ghi `api-smoke-report.json`.
 - Android build/test: README ghi `.\gradlew.bat :app:assembleDebug`; repo có unit test `ShowtimeTimeFormatterTest.kt` và template tests.
 - Admin Web scripts: `npm run dev`, `npm run build`, `npm run lint`, `npm run preview`.
-- Manual checklist: `docs/sepay-payment-manual-test-checklist.md` mô tả test SePay create/status/webhook/wrong amount/wrong code/transfer out/duplicate webhook.
+- Manual checklist: `../testing/sepay-payment-manual-test-checklist.md` mô tả test SePay create/status/webhook/wrong amount/wrong code/transfer out/duplicate webhook.
 - Demo nên chuẩn bị: database migrated + seeded, backend env, Firebase service account nếu test Google, SePay env nếu test real QR/webhook, admin `.env`, Android Google config nếu dùng Google sign-in.
 
 ## 17. Công cụ và thư viện đã dùng
@@ -376,7 +376,7 @@ Phase 7 - Production hardening:
 | Seat map status tính theo showtime | `seats/seats.service.ts`, `api-server/README.md` | Sold/locked derived. |
 | Booking tạo từ lockIds | `bookings/dto/create-booking.dto.ts`, `bookings.service.ts` | Không tạo từ seatIds trực tiếp. |
 | Mock payment tạo payment/ticket | `payments/payments.service.ts` | Upsert payment/ticket, booking `PAID`. |
-| SePay create/webhook/status có trong code | `payments.controller.ts`, `payments.service.ts`, `docs/sepay-payment-backend-summary.md` | Có API key webhook. |
+| SePay create/webhook/status có trong code | `payments.controller.ts`, `payments.service.ts`, `../payment/sepay-payment-backend-summary.md` | Có API key webhook. |
 | SePay webhook chưa kiểm tra lock expiry như mock payment | `api-server/src/payments/payments.service.ts` | `mockSuccess` kiểm tra active locks; `handleSepayWebhook` kiểm tra amount/booking/paid seats nhưng không thấy `lockedUntil`. |
 | Ticket verify/check-in flow | `tickets.controller.ts`, `tickets.service.ts` | Check-in chuyển ticket `USED`, booking `CHECKED_IN`. |
 | Admin routes public demo | `README.md`, controllers admin không có `UseGuards` | Cần production hardening. |
