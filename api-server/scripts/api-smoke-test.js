@@ -451,6 +451,11 @@ async function main() {
   console.log(`EousX API smoke test`);
   console.log(`Base URL: ${baseUrl}`);
   console.log(`Suffix: ${suffix}`);
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/i.test(baseUrl);
+  if (!isLocal) {
+    console.log('⚠️ WARNING: Target is NOT localhost! Running smoke tests against a remote/public environment.');
+    console.log('⚠️ Real database records (users, showtimes, bookings) will be created.');
+  }
   console.log('');
 
   await test('D1 Health', async () => {
@@ -940,6 +945,28 @@ async function main() {
     const verifyResponse = await request('GET', `/tickets/verify/${encodeURIComponent(state.qrCode)}`);
     expectStatus('GET /tickets/verify/:qrCode', verifyResponse, 200);
     assert('verify ticket status VALID', verifyResponse.data && verifyResponse.data.status === 'VALID');
+
+    const normalizedVerifyResponse = await request(
+      'GET',
+      `/tickets/verify/${encodeURIComponent(` ${state.qrCode.toLowerCase()} `)}`,
+    );
+    expectStatus('GET /tickets/verify/:qrCode normalizes manual input', normalizedVerifyResponse, 200);
+    assert(
+      'verify ticket accepts lowercase and surrounding spaces',
+      normalizedVerifyResponse.data && normalizedVerifyResponse.data.status === 'VALID',
+    );
+
+    const bookingCode = ticketResponse.data && ticketResponse.data.booking && ticketResponse.data.booking.code;
+    assert('ticket response includes booking code', Boolean(bookingCode));
+    const bookingCodeVerifyResponse = await request(
+      'GET',
+      `/tickets/verify/${encodeURIComponent(bookingCode.toLowerCase())}`,
+    );
+    expectStatus('GET /tickets/verify/:qrCode accepts booking code', bookingCodeVerifyResponse, 200);
+    assert(
+      'verify ticket by booking code status VALID',
+      bookingCodeVerifyResponse.data && bookingCodeVerifyResponse.data.status === 'VALID',
+    );
 
     const checkInResponse = await request('POST', `/tickets/${state.ticketId}/check-in`);
     expectStatus('POST /tickets/:ticketId/check-in', checkInResponse, [200, 201]);

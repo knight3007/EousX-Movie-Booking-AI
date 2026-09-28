@@ -2,11 +2,9 @@ import axios from "axios";
 import dayjs from "dayjs";
 import {
   BadgeCheck,
-  CalendarDays,
   CheckCircle2,
   CircleAlert,
   CreditCard,
-  Film,
   QrCode,
   RefreshCw,
   TicketCheck,
@@ -400,7 +398,7 @@ export default function TicketCheckInPage() {
             Ticket Check-in
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted">
-            Verify a ticket QR code and confirm customer check-in.
+            Verify a ticket QR code or booking code and confirm customer check-in.
           </p>
         </div>
 
@@ -424,10 +422,10 @@ export default function TicketCheckInPage() {
 
               <div>
                 <h2 className="card-title text-2xl text-white">
-                  Verify QR Code
+                  Verify Ticket Code
                 </h2>
                 <p className="mt-1 text-sm text-muted">
-                  Paste the QR code from the generated ticket.
+                  Paste the ticket QR code or booking code.
                 </p>
               </div>
             </div>
@@ -435,14 +433,14 @@ export default function TicketCheckInPage() {
             <form onSubmit={handleVerify} className="mt-6 space-y-4">
               <div>
                 <label className="mb-1 block text-xs font-bold uppercase tracking-[0.18em] text-muted">
-                  QR Code
+                  Ticket QR / Booking Code
                 </label>
                 <textarea
                   value={qrCode}
                   onChange={(event) => setQrCode(event.target.value)}
                   rows={4}
                   className="w-full resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--color-primary)]"
-                  placeholder="EOUSX-QR-..."
+                  placeholder="EOUSX-QR-... or EOUSX-..."
                 />
               </div>
 

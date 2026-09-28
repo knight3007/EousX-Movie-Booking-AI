@@ -35,8 +35,14 @@ export class TicketsService {
   }
 
   async verify(qrCode: string) {
+    const code = qrCode.trim();
     const ticket = await this.prisma.ticket.findFirst({
-      where: { qrCode },
+      where: {
+        OR: [
+          { qrCode: { equals: code, mode: 'insensitive' } },
+          { booking: { code: { equals: code, mode: 'insensitive' } } },
+        ],
+      },
       include: this.getTicketInclude(),
     });
 
