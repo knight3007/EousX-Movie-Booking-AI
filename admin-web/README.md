@@ -38,13 +38,19 @@ npm run preview
 
 The admin web app talks to the EousX API server. The backend has no `/api` prefix.
 
-Local API base URL:
+Copy `.env.example` to `.env`:
 
-```text
-VITE_API_BASE_URL=http://localhost:3000
+```powershell
+cp .env.example .env
 ```
 
-If `VITE_API_BASE_URL` is not set, the current API client falls back to `http://localhost:3000`.
+Environment variables:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `VITE_API_BASE_URL` | `http://localhost:3000` | Backend API base URL without trailing slash. |
+
+If `VITE_API_BASE_URL` is not set, the API client falls back to `http://localhost:3000`.
 
 Do not commit local `.env` files. Do not put backend secrets, Firebase service account JSON, JWT secrets, or Gemini API keys in Vite environment variables.
 

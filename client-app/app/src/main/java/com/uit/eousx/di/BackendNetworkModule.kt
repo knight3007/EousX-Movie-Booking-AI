@@ -19,7 +19,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 @InstallIn(SingletonComponent::class)
 object BackendNetworkModule {
 
-    private const val BACKEND_BASE_URL = "https://api-eousx.hius.io.vn/"
+    private const val BACKEND_BASE_URL = "http://10.0.2.2:3000/"
 
     @Provides
     @Singleton

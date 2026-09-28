@@ -1,0 +1,8 @@
+## ==============================================================================
+## EousX Android Client - Local Properties Template
+## ==============================================================================
+## Copy this file to local.properties and set your local Android SDK location.
+## DO NOT commit local.properties to git.
+## ==============================================================================
+
+sdk.dir=C\:\\Users\\<username>\\AppData\\Local\\Android\\Sdk
